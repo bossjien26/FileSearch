@@ -3,7 +3,6 @@ using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Models.Request;
-using MongoDB.Driver;
 using Services;
 using Services.Interface;
 
@@ -11,7 +10,7 @@ namespace api.Controllers
 {
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class FileController : ControllerBase
     {
         private readonly ILogger<FileController> _logger;
@@ -19,8 +18,6 @@ namespace api.Controllers
         private IFileService _fileService;
 
         private IFileToMongoService _fileToMongoService;
-
-        private MongoClient _mongoClient;
 
         public FileController(AppSettings appSettings, ILogger<FileController> logger)
         {
@@ -31,11 +28,12 @@ namespace api.Controllers
 
         [HttpPost]
         [Route("")]
-        public async Task<IActionResult> UploadFile(UploadFileRequest uploadFile)
+        public async Task<IActionResult> UploadFile([FromForm]UploadFileRequest uploadFile)
         {
+            if (uploadFile.FormFiles.Count == 0) { return NotFound(); }
             var medias = _fileService.UploadFile(uploadFile.FormFiles);
             return medias.Count == 0 ?
-                NoContent() :
+                NotFound() :
                 Ok(await _fileToMongoService.InsertMediaListToMongo(medias));
         }
     }
