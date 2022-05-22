@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Helpers;
+using Helpers.GetFileContent;
 using Microsoft.AspNetCore.Http;
 using MongoEntities;
 using Services.Interface;
@@ -12,9 +13,12 @@ namespace Services
     {
         private readonly string _path;
 
+        private PdfContent _pdfContent;
+
         public FileService(AppSettings appSettings)
         {
             _path = appSettings.FilePath;
+            _pdfContent = new PdfContent();
         }
 
         public List<Media> UploadFile(List<IFormFile> formFiles)
@@ -29,7 +33,8 @@ namespace Services
                     medias.Add(new Media()
                     {
                         OriginName = file.FileName,
-                        NewFileName = newFileName
+                        NewFileName = newFileName,
+                        Content = _pdfContent.PrintPDF(_path + newFileName)
                     });
                 }
             }
