@@ -5,6 +5,6 @@ namespace Models.Response
 {
     public class UploadFileResponse
     {
-        public List<Media> media { get; set; }
+        public List<Media> media { get; set; } = new List<Media>();
     }
 }
