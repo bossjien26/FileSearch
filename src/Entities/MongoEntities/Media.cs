@@ -16,12 +16,12 @@ namespace MongoEntities
 
         public string Content { get; set; }
 
-        public bool IsDownload { get; set; }
+        public bool IsDownload { get; set; } = true;
 
         public bool IsDelete { get; set; } = false;
 
-        public DateTime CreateAt { get; set; } = DateTime.Now;
+        public long CreateAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds() ;
 
-        public DateTime UpdateAt { get; set; } = DateTime.Now;
+        public long UpdateAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds() ;
     }
 }
