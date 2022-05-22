@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Helpers;
 using Helpers.MongoDB;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,11 +29,15 @@ namespace api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-             services.Configure<MongoDBSetting>(  
-                Configuration.GetSection(nameof(MongoDBSetting)));  
-  
-            // services.AddSingleton<MongoDBSetting>(sp =>  
-            //     sp.GetRequiredService<IOptions<MongoDBSetting>>().Value);  
+            // services.Configure<AppSettings>(
+            //    Configuration.GetSection(nameof(AppSettings)));
+
+            // services.AddSingleton<AppSettings>(sp =>
+            //     sp.GetRequiredService<IOptions<AppSettings>>().Value);
+            var appSettings = Configuration.GetSection(nameof(AppSettings)).Get<AppSettings>();
+
+            services.AddSingleton(appSettings);
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -51,7 +56,9 @@ namespace api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "api v1"));
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseRouting();
 
