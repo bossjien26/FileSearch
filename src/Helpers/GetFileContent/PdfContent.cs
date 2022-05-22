@@ -1,13 +1,10 @@
 using System.Text;
-using System.Text.RegularExpressions;
 using UglyToad.PdfPig;
 
 namespace Helpers.GetFileContent
 {
     public class PdfContent
     {
-        private static Regex _compiledUnicodeRegex = new Regex(@"[^\u0000-\u007F]", RegexOptions.Compiled);
-
         public string PrintPDF(string filePath)
         {
             var content = new StringBuilder();
@@ -25,13 +22,7 @@ namespace Helpers.GetFileContent
                     }
                 }
             }
-            return StripUnicodeCharactersFromString(content.ToString());
+            return content.ToString().Replace("\u0000", string.Empty);
         }
-
-
-        private static string StripUnicodeCharactersFromString(string inputValue)
-        {
-            return _compiledUnicodeRegex.Replace(inputValue, string.Empty);
-        }
-    }
+   }
 }
