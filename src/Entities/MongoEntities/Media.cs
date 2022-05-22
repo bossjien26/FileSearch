@@ -20,8 +20,8 @@ namespace MongoEntities
 
         public bool IsDelete { get; set; } = false;
 
-        public long CreateAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds() ;
+        public string CreateAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
 
-        public long UpdateAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds() ;
+        public string UpdateAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
     }
 }
