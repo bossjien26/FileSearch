@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Helpers\Helpers.csproj" />
     <ProjectReference Include="..\Entities\MongoEntities\MongoEntities.csproj" />
+    <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
 </Project>
