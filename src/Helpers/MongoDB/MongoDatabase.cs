@@ -4,6 +4,6 @@ namespace Helpers.MongoDB
 {
     public class MongoDatabase
     {
-        public ArticleDatabase ArticleDatabase { get; set; }
+        public MediaDatabase MediaDatabase { get; set; }
     }
 }
