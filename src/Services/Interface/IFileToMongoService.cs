@@ -1,11 +1,15 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Models.Response;
 using MongoEntities;
 
 namespace Services.Interface
 {
-    public interface IFileToMongoServer
+    public interface IFileToMongoService
     {
-        Task InsertAsync(Media media);
+        Task<UploadFileResponse> InsertMediaListToMongo(List<Media> medias);
+
+        Task<Media> InsertAsync(Media media);
 
         Task<Media> GetAsync(string id);
 

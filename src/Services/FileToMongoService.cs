@@ -1,24 +1,39 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helpers;
+using Models.Response;
 using MongoDB.Driver;
 using MongoEntities;
 using Services.Interface;
 
 namespace Services
 {
-    public class FileToMongoServer : IFileToMongoServer
+    public class FileToMongoService : IFileToMongoService
     {
         private readonly IMongoCollection<Media> _mediaCollection;
 
-        public FileToMongoServer(AppSettings appSettings)
+        public FileToMongoService(AppSettings appSettings)
         {
             var client = new MongoClient(appSettings.MongoDBSetting.ConnectionString);
             var database = client.GetDatabase(appSettings.MongoDBSetting.Databases.ArticleDatabase.Name);
             _mediaCollection = database.GetCollection<Media>(appSettings.MongoDBSetting.Databases.ArticleDatabase.Collections.ArticleCollectionName);
         }
 
-        public async Task InsertAsync(Media media) =>
+        public async Task<UploadFileResponse> InsertMediaListToMongo(List<Media> medias)
+        {
+            var uploadFileResponse = new UploadFileResponse();
+            foreach (var media in medias)
+            {
+                uploadFileResponse.media.Add(await InsertAsync(media));
+            }
+            return uploadFileResponse;
+        }
+
+        public async Task<Media> InsertAsync(Media media)
+        {
             await _mediaCollection.InsertOneAsync(media);
+            return media;
+        }
 
         public async Task<Media> GetAsync(string id) =>
             await _mediaCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
