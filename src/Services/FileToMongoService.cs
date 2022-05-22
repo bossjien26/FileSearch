@@ -15,8 +15,8 @@ namespace Services
         public FileToMongoService(AppSettings appSettings)
         {
             var client = new MongoClient(appSettings.MongoDBSetting.ConnectionString);
-            var database = client.GetDatabase(appSettings.MongoDBSetting.Databases.ArticleDatabase.Name);
-            _mediaCollection = database.GetCollection<Media>(appSettings.MongoDBSetting.Databases.ArticleDatabase.Collections.ArticleCollectionName);
+            var database = client.GetDatabase(appSettings.MongoDBSetting.Databases.MediaDatabase.Name);
+            _mediaCollection = database.GetCollection<Media>(appSettings.MongoDBSetting.Databases.MediaDatabase.Collections.MediaContentCollectionName);
         }
 
         public async Task<UploadFileResponse> InsertMediaListToMongo(List<Media> medias)
