@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,20 +18,25 @@ namespace api.Controllers
 
         private IFileService _fileService;
 
+        private IFileToMongoService _fileToMongoService;
+
         private MongoClient _mongoClient;
 
         public FileController(AppSettings appSettings, ILogger<FileController> logger)
         {
             _logger = logger;
             _fileService = new FileService(appSettings);
+            _fileToMongoService = new FileToMongoService(appSettings);
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult UploadFile(UploadFileRequest uploadFile)
+        public async Task<IActionResult> UploadFile(UploadFileRequest uploadFile)
         {
-            _fileService.UploadFile(uploadFile.FormFiles);
-            return Ok();
+            var medias = _fileService.UploadFile(uploadFile.FormFiles);
+            return medias.Count == 0 ?
+                NoContent() :
+                Ok(await _fileToMongoService.InsertMediaListToMongo(medias));
         }
     }
 }
