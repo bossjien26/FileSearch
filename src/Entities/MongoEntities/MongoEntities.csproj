@@ -3,9 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\..\Enums\Enums.csproj" />
+  </ItemGroup>
 </Project>

@@ -3,18 +3,17 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <!-- <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.0.0-alpha.5" /> -->
-    <PackageReference Include="Elasticsearch.Net" Version="7.17.2" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Helpers\Helpers.csproj" />
+    <ProjectReference Include="..\Enums\Enums.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\Entities\MongoEntities\MongoEntities.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
-
 </Project>
