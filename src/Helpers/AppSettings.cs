@@ -6,6 +6,10 @@ namespace Helpers
     {
         public MongoDBSetting MongoDBSetting { get; set; }
 
+        public HeaderSetting HeaderSettings { get; set; }
+
+        public JwtSettings JwtSettings { get; set; }
+
         public string FilePath { get; set; }
     }
 }
