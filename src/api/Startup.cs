@@ -1,3 +1,4 @@
+using System.Linq;
 using Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Middlewares.Authentication;
 
 namespace api
 {
@@ -51,6 +53,8 @@ namespace api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var appSettings = Configuration.GetSection(nameof(AppSettings)).Get<AppSettings>();
+
             app.UseCors();
 
             if (env.IsDevelopment())
@@ -61,6 +65,18 @@ namespace api
             }
 
             // app.UseHttpsRedirection();
+
+            app.Use(async (context, next) =>
+            {
+                // Add Header
+                context.Response.Headers[appSettings.HeaderSettings.Response.FirstOrDefault().Title] = appSettings.HeaderSettings.Response.FirstOrDefault().Content;
+
+                // Call next middleware
+                await next.Invoke();
+            });
+
+            app.UseMiddleware<AuthenticationMiddleware>();
+
 
             app.UseRouting();
 
