@@ -9,9 +9,6 @@ namespace Models.Requests
         public string GroupId { get; set; }
 
         [Required]
-        public string Customer { get; set; }
-
-        [Required]
-        public string Password { get; set; }
+        public string Project { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace Services.Interface
     {
         Task<TokenInfo> GetTokenAsync(string token);
 
-        Task<TokenInfo> GetAsync(string groupId, string custom);
+        Task<TokenInfo> GetAsync(string groupId, string project, string password);
 
         Task<TokenInfo> InsertAsync(TokenInfo tokenInfo);
 

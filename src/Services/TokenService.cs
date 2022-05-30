@@ -34,8 +34,9 @@ namespace Services
             {
                 Subject = new ClaimsIdentity(new[] {
                     new Claim("groupId", identityAuthenticate.GroupId),
-                    new Claim("customer", identityAuthenticate.Customer),
+                    new Claim("project", identityAuthenticate.Project),
                     new Claim("password", identityAuthenticate.Password),
+                    new Claim("role", identityAuthenticate.Role.ToString()),
                     }),
                 Expires = DateTime.UtcNow.AddYears(10),
                 SigningCredentials = new SigningCredentials(
@@ -53,9 +54,9 @@ namespace Services
             .FirstOrDefaultAsync();
 
 
-        public async Task<TokenInfo> GetAsync(string groupId, string custom) =>
+        public async Task<TokenInfo> GetAsync(string groupId, string project, string password) =>
             await _tokenInfoCollection.Find<TokenInfo>(x => x.GroupId == groupId &&
-            x.Customer == custom).FirstOrDefaultAsync();
+            x.Project == project && x.Password == password).FirstOrDefaultAsync();
 
 
         public async Task RemoveAsync(string id) =>

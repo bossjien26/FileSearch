@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
-using Enums;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Middlewares.Authentication;
 using Models.Requests;
 using Models.Token;
 using MongoEntities;
@@ -22,23 +20,23 @@ namespace api.Controllers
             _tokenService = new TokenService(appSettings);
         }
 
-        [Authorize(RoleEnum.SuperAdmin, RoleEnum.Admin)]
         [HttpPost]
         [Route("")]
         public async Task<IActionResult> Register(GenerateAuthenticateRequest request)
         {
-            var token = _tokenService.generateJwtToken(new IdentityAuthenticate()
+            var identityAuthenticate = new IdentityAuthenticate()
             {
                 GroupId = request.GroupId,
-                Customer = request.Customer,
-                Password = request.Password,
-            });
+                Project = request.Project,
+            };
+            var token = _tokenService.generateJwtToken(identityAuthenticate);
 
             return Ok(await _tokenService.InsertAsync(new TokenInfo()
             {
                 Token = token,
                 GroupId = request.GroupId,
-                Customer = request.Customer,
+                Project = request.Project,
+                Password = identityAuthenticate.Password
             }));
         }
     }

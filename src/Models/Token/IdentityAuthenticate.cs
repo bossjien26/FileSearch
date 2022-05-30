@@ -1,3 +1,4 @@
+using System;
 using Enums;
 
 namespace Models.Token
@@ -6,10 +7,10 @@ namespace Models.Token
     {
         public string GroupId { get; set; }
 
-        public string Customer { get; set; }
+        public string Project { get; set; }
+
+        public string Password { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
 
         public RoleEnum Role { get; set; } = RoleEnum.Customer;
-
-        public string Password { get; set; }
     }
 }

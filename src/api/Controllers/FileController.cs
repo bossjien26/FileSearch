@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
+using Enums;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Middlewares.Authentication;
 using Models.Request;
 using Services;
 using Services.Interface;
@@ -26,15 +28,24 @@ namespace api.Controllers
             _fileToMongoService = new FileToMongoService(appSettings);
         }
 
+        [Authorize(RoleEnum.SuperAdmin, RoleEnum.Admin)]
         [HttpPost]
         [Route("")]
-        public async Task<IActionResult> UploadFile([FromForm]UploadFileRequest uploadFile)
+        public async Task<IActionResult> UploadFile([FromForm] UploadFileRequest uploadFile)
         {
             if (uploadFile.FormFiles.Count == 0) { return NotFound(); }
             var medias = _fileService.UploadFile(uploadFile.FormFiles);
             return medias.Count == 0 ?
                 NotFound() :
                 Ok(await _fileToMongoService.InsertMediaListToMongo(medias));
+        }
+
+        [Authorize(RoleEnum.SuperAdmin, RoleEnum.Admin)]
+        [HttpGet]
+        [Route("")]
+        public IActionResult test()
+        {
+            return NoContent();
         }
     }
 }

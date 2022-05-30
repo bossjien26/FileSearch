@@ -13,7 +13,9 @@ namespace MongoEntities
 
         public string GroupId { get; set; }
 
-        public string Customer { get; set; }
+        public string Project { get; set; }
+
+        public string Password { get; set; }
 
         public string Token { get; set; }
 

@@ -35,10 +35,14 @@ namespace Middlewares.Authentication
                 await _next.Invoke(httpContext);
                 return;
             }
-
+            var tokenInfo = await _tokenService.GetTokenAsync(token);
+            if (tokenInfo == null)
+            {
+                await _next.Invoke(httpContext);
+                return;
+            }
             if (!CheckJwtTokenIsExpire(token))
             {
-                httpContext.Items["httpContextTokenInfo"] = null;
                 await _next.Invoke(httpContext);
                 return;
             }
@@ -58,8 +62,12 @@ namespace Middlewares.Authentication
                 var IdentityAuthenticates = GetVerifyTokenType(appSettings, token);
                 // attach user to context on successful jwt validation
                 httpContext.Items["httpContextTokenInfo"] = IdentityAuthenticates;
-                await _tokenService.GetTokenAsync(token);
+                // if (!string.IsNullOrEmpty(tokenInfo.Id))
+                // {
+                //     return httpContext;
+                // }else{
                 return httpContext;
+                // }
             }
             catch (Exception exception)
             {
@@ -71,7 +79,7 @@ namespace Middlewares.Authentication
         private IdentityAuthenticate GetVerifyTokenType(AppSettings appSettings, string token)
         {
             var IdentityAuthenticates = VerifyToken(appSettings, token).Claims.
-                    Where(x => x.Type == "groupId" || x.Type == "customer")
+                    Where(x => x.Type == "groupId" || x.Type == "customer" || x.Type == "password")
                     .Select(s => s.Value).ToList();
             return CheckVerifyTokenType(IdentityAuthenticates, token);
         }
@@ -86,9 +94,8 @@ namespace Middlewares.Authentication
             return new IdentityAuthenticate()
             {
                 GroupId = IdentityAuthenticates[0],
-                Customer = IdentityAuthenticates[1],
+                Project = IdentityAuthenticates[1],
                 Role = (RoleEnum)Enum.Parse(typeof(RoleEnum), IdentityAuthenticates[2], true),
-                Password = token
             };
         }
 

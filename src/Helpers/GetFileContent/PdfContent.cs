@@ -7,8 +7,8 @@ namespace Helpers.GetFileContent
     {
         public string PrintPDF(string filePath)
         {
-            var content = new StringBuilder();
-
+            // var content = new StringBuilder();
+            var content = "";
             using (PdfDocument document = PdfDocument.Open(filePath))
             {
                 for (var i = 0; i < document.NumberOfPages; i++)
@@ -18,11 +18,12 @@ namespace Helpers.GetFileContent
 
                     foreach (var word in page.GetWords())
                     {
-                        content.AppendFormat(word.Text);
+                        // content.AppendFormat(word.Text);
+                        content += word.Text;
                     }
                 }
             }
             return content.ToString().Replace("\u0000", string.Empty);
         }
-   }
+    }
 }
