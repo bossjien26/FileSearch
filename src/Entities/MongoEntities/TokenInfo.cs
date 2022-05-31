@@ -19,7 +19,7 @@ namespace MongoEntities
 
         public string Token { get; set; }
 
-        public RoleEnum role { get; set; } = RoleEnum.Customer;
+        public RoleEnum Role { get; set; } = RoleEnum.Customer;
 
         public string createAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
 

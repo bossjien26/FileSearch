@@ -30,15 +30,31 @@ namespace Services
         public string generateJwtToken(IdentityAuthenticate identityAuthenticate)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor
+            // var tokenDescriptor = new SecurityTokenDescriptor
+            // {
+            //     Subject = new ClaimsIdentity(new[] {
+            //         new Claim("groupId", identityAuthenticate.GroupId),
+            //         new Claim("project", identityAuthenticate.Project),
+            //         new Claim("password", identityAuthenticate.Password),
+            //         new Claim("role", identityAuthenticate.Role.ToString()),
+            //         }),
+            //     Expires = DateTime.UtcNow.AddYears(100),
+            //     SigningCredentials = new SigningCredentials(
+            //         new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.JwtSettings.Secret)),
+            //         SecurityAlgorithms.HmacSha256Signature
+            //     )
+            // };
+
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {
                     new Claim("groupId", identityAuthenticate.GroupId),
                     new Claim("project", identityAuthenticate.Project),
                     new Claim("password", identityAuthenticate.Password),
                     new Claim("role", identityAuthenticate.Role.ToString()),
-                    }),
-                Expires = DateTime.UtcNow.AddYears(10),
+                }),
+                Expires = DateTime.UtcNow.AddYears(100),
+                Issuer = "vcsjones",
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.JwtSettings.Secret)),
                     SecurityAlgorithms.HmacSha256Signature

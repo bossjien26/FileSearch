@@ -66,14 +66,14 @@ namespace api
 
             // app.UseHttpsRedirection();
 
-            app.Use(async (context, next) =>
-            {
-                // Add Header
-                context.Response.Headers[appSettings.HeaderSettings.Response.FirstOrDefault().Title] = appSettings.HeaderSettings.Response.FirstOrDefault().Content;
+            // app.Use(async (context, next) =>
+            // {
+            //     // Add Header
+            //     context.Response.Headers[appSettings.HeaderSettings.Response.FirstOrDefault().Title] = appSettings.HeaderSettings.Response.FirstOrDefault().Content;
 
-                // Call next middleware
-                await next.Invoke();
-            });
+            //     // Call next middleware
+            //     await next.Invoke();
+            // });
 
             app.UseMiddleware<AuthenticationMiddleware>();
 

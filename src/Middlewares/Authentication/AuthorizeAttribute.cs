@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Collections.Generic;
 using Enums;
-using Services.Interface;
-using Models.Token;
+using MongoEntities;
 
 namespace Middlewares.Authentication
 {
@@ -14,13 +13,11 @@ namespace Middlewares.Authentication
     // IAsyncAuthorizationFilter
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {
-        private ITokenService _tokenService;
-
-        private readonly IList<RoleEnum> _roles;
+        private readonly IList<RoleEnum> _roles = new List<RoleEnum>();
 
         public AuthorizeAttribute(params RoleEnum[] roles)
         {
-            _roles = roles ?? new RoleEnum[] { };
+            _roles = roles;
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
@@ -30,7 +27,7 @@ namespace Middlewares.Authentication
             if (allowAnonymous)
                 return;
 
-            var httpContextTokenInfo = (IdentityAuthenticate)context.HttpContext.Items["httpContextTokenInfo"];
+            var httpContextTokenInfo = (TokenInfo)context.HttpContext.Items["httpContextTokenInfo"];
             if (httpContextTokenInfo == null)
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
@@ -42,9 +39,9 @@ namespace Middlewares.Authentication
             }
         }
 
-        private void verifyUserToken(AuthorizationFilterContext context, IdentityAuthenticate httpContextTokenInfo)
+        private void verifyUserToken(AuthorizationFilterContext context, TokenInfo httpContextTokenInfo)
         {
-            if (httpContextTokenInfo == null && _roles.Contains(httpContextTokenInfo.Role))
+            if (httpContextTokenInfo == null && !_roles.Contains(httpContextTokenInfo.Role))
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
             }

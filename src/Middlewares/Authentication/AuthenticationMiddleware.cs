@@ -6,11 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Enums;
 using Helpers;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Models.Token;
+using MongoEntities;
 using Services;
 using Services.Interface;
 
@@ -21,6 +22,8 @@ namespace Middlewares.Authentication
         private readonly RequestDelegate _next;
 
         private ITokenService _tokenService;
+
+        private TokenInfo _tokenInfo = new TokenInfo();
 
         public AuthenticationMiddleware(RequestDelegate next) => _next = next;
 
@@ -35,71 +38,49 @@ namespace Middlewares.Authentication
                 await _next.Invoke(httpContext);
                 return;
             }
-            var tokenInfo = await _tokenService.GetTokenAsync(token);
-            if (tokenInfo == null)
+            _tokenInfo = await _tokenService.GetTokenAsync(token);
+            if (_tokenInfo == null || !VerifyToken(appSettings, token))
             {
                 await _next.Invoke(httpContext);
                 return;
             }
-            if (!CheckJwtTokenIsExpire(token))
-            {
-                await _next.Invoke(httpContext);
-                return;
-            }
-            else
-            {
-                httpContext = await attachUserToContext(httpContext, token, appSettings, logger);
-                await _next.Invoke(httpContext);
-                return;
-            }
+
+            // httpContext = attachUserToContext(httpContext, token, appSettings, logger);
+            httpContext.Items["httpContextTokenInfo"] = _tokenInfo;
+
+            await _next.Invoke(httpContext);
+            return;
         }
 
-        private async Task<HttpContext> attachUserToContext(HttpContext httpContext, string token,
+        private HttpContext attachUserToContext(HttpContext httpContext, string token,
         AppSettings appSettings, ILogger<AuthenticationMiddleware> logger)
         {
-            try
-            {
-                var IdentityAuthenticates = GetVerifyTokenType(appSettings, token);
-                // attach user to context on successful jwt validation
-                httpContext.Items["httpContextTokenInfo"] = IdentityAuthenticates;
-                // if (!string.IsNullOrEmpty(tokenInfo.Id))
-                // {
-                //     return httpContext;
-                // }else{
-                return httpContext;
-                // }
-            }
-            catch (Exception exception)
-            {
-                logger.LogDebug(exception, "jwt validate is error");
-                return httpContext;
-            }
+            // try
+            // {
+            // var identityAuthenticates = GetVerifyTokenType(appSettings, token);
+            // attach user to context on successful jwt validation
+            return httpContext;
+            // }
+            // catch (Exception exception)
+            // {
+            //     logger.LogDebug(exception, "jwt validate is error");
+            //     return httpContext;
+            // }
         }
 
-        private IdentityAuthenticate GetVerifyTokenType(AppSettings appSettings, string token)
-        {
-            var IdentityAuthenticates = VerifyToken(appSettings, token).Claims.
-                    Where(x => x.Type == "groupId" || x.Type == "customer" || x.Type == "password")
-                    .Select(s => s.Value).ToList();
-            return CheckVerifyTokenType(IdentityAuthenticates, token);
-        }
+        // private IdentityAuthenticate GetVerifyTokenType(AppSettings appSettings, string token)
+        // {
+        //     JsonWebTokenHandler tokenHandler = new();
+        //     var tokenS = GetJwtSecurityToken(appSettings, token);
 
-        private IdentityAuthenticate CheckVerifyTokenType(List<string> IdentityAuthenticates, string token)
-        {
-            if (IdentityAuthenticates.Count() != 3)
-            {
-                return new IdentityAuthenticate();
-            }
+        //     var identityAuthenticates = tokenS.Claims.
+        //             Where(x => x.Type == "groupId" || x.Type == "customer" || x.Type == "password")
+        //             .Select(s => s.Value).ToList();
+        //     // var IdentityAuthenticates = tokenS.Claims.First(claim => claim.Type == "groupId");
+        //     return CheckVerifyTokenType(identityAuthenticates, token);
+        // }
 
-            return new IdentityAuthenticate()
-            {
-                GroupId = IdentityAuthenticates[0],
-                Project = IdentityAuthenticates[1],
-                Role = (RoleEnum)Enum.Parse(typeof(RoleEnum), IdentityAuthenticates[2], true),
-            };
-        }
-
-        private JwtSecurityToken VerifyToken(AppSettings appSettings, string token)
+        private JwtSecurityToken GetJwtSecurityToken(AppSettings appSettings, string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -118,22 +99,39 @@ namespace Middlewares.Authentication
             return (JwtSecurityToken)validatedToken;
         }
 
-        private bool CheckJwtTokenIsExpire(string token)
+        private IdentityAuthenticate CheckVerifyTokenType(List<string> IdentityAuthenticates, string token)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadToken(token);
+            if (IdentityAuthenticates.Count() != 3)
+            {
+                return new IdentityAuthenticate();
+            }
 
-            var expDate = jwtToken.ValidTo;
-            return expDate > DateTime.UtcNow.AddHours(8) ? true : false;
+            return new IdentityAuthenticate()
+            {
+                GroupId = IdentityAuthenticates[0],
+                Project = IdentityAuthenticates[1],
+                Role = (RoleEnum)Enum.Parse(typeof(RoleEnum), IdentityAuthenticates[2], true),
+            };
         }
-    }
 
-    // Extension method used to add the middleware to the HTTP request pipeline.
-    public static class AuthenticationMiddlewareExtensions
-    {
-        public static IApplicationBuilder UseAuthenticationMiddleware(this IApplicationBuilder builder)
+        private bool VerifyToken(AppSettings appSettings, string token)
         {
-            return builder.UseMiddleware<AuthenticationMiddleware>();
+            JsonWebTokenHandler tokenHandler = new();
+            var validatedToken = tokenHandler.ValidateToken(token,
+                new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuers = new string[] { "vcsjones" },
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.ASCII.GetBytes(appSettings.JwtSettings.Secret)
+                    )
+                }
+            );
+
+            return validatedToken.SecurityToken.ValidTo > DateTime.UtcNow ? true : false;
         }
     }
 }
