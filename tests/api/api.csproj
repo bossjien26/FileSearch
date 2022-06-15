@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bogus" Version="33.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.6" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="coverlet.collector" Version="3.0.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
+    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.15.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Entities\MongoEntities\MongoEntities.csproj" />
+    <!-- <ProjectReference Include="..\..\src\Repositories\Repositories.csproj" /> -->
+    <ProjectReference Include="..\..\src\Services\Services.csproj" />
+    <ProjectReference Include="..\..\src\Enums\Enums.csproj" />
+    <ProjectReference Include="..\..\src\Helpers\Helpers.csproj" />
+    <!-- <ProjectReference Include="..\..\src\RestApi\RestApi.csproj" /> -->
+  </ItemGroup>
+</Project>

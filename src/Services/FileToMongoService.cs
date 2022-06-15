@@ -8,15 +8,14 @@ using Services.Interface;
 
 namespace Services
 {
-    public class FileToMongoService : IFileToMongoService
+    public class FileToMongoService : MongoSetting, IFileToMongoService
     {
         private readonly IMongoCollection<Media> _mediaCollection;
 
-        public FileToMongoService(AppSettings appSettings)
+        public FileToMongoService(AppSettings appSettings) : base(appSettings)
         {
-            var client = new MongoClient(appSettings.MongoDBSetting.ConnectionString);
-            var database = client.GetDatabase(appSettings.MongoDBSetting.Databases.MediaDatabase.Name);
-            _mediaCollection = database.GetCollection<Media>(appSettings.MongoDBSetting.Databases.MediaDatabase.Collections.MediaContentCollectionName);
+            var mongoDatabase = _client.GetDatabase(appSettings.MongoDBSetting.Databases.MediaDatabase.Name);
+            _mediaCollection = mongoDatabase.GetCollection<Media>(appSettings.MongoDBSetting.Databases.MediaDatabase.Collections.MediaContentCollectionName);
         }
 
         public async Task<UploadFileResponse> InsertMediaListToMongo(List<Media> medias)
