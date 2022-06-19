@@ -21,28 +21,29 @@ namespace Services
             _pdfContent = new PdfContent();
         }
 
-        public List<Media> UploadFile(List<IFormFile> formFiles)
+        public List<Media> UploadFile(IFormFile file)
         {
             var medias = new List<Media>();
-            if (formFiles.Count > 0)
+            string newFileName = GenericToFileName(System.IO.Path.GetExtension(file.FileName));
+            var fileBytes = new byte[] { };
+            using (var ms = new MemoryStream())
             {
-                foreach (var file in formFiles)
-                {
-                    string newFileName = GenericToFileName(System.IO.Path.GetExtension(file.FileName));
-                    SaveFile(file, newFileName);
-                    medias.Add(new Media()
-                    {
-                        OriginName = file.FileName,
-                        NewFileName = newFileName,
-                        Content = _pdfContent.PrintPDF(_path + newFileName)
-                    });
-                }
+                file.CopyTo(ms);
+                fileBytes = ms.ToArray();
+                // act on the Base64 data
             }
+            SaveFile(file, newFileName);
+            medias.Add(new Media()
+            {
+                OriginName = file.FileName,
+                NewFileName = newFileName,
+                Content = _pdfContent.PrintPDF(fileBytes)
+            });
             return medias;
         }
 
         private string GenericToFileName(string extensions)
-            => DateTime.Now.ToString("yyyyMMddHHmmssffff") + "_security(C)." + extensions;
+            => DateTime.Now.ToString("yyyyMMddHHmmssffff") + "_security(C)" + extensions;
 
         private bool SaveFile(IFormFile file, string newFileName)
         {

@@ -4,7 +4,7 @@ using MongoEntities;
 using NUnit.Framework;
 using Services;
 
-namespace api.Services
+namespace Test.API.Services
 {
     [TestFixture]
     public class FileToMongoServiceTest : MongoSetting

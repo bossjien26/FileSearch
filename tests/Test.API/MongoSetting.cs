@@ -2,7 +2,7 @@ using Helpers;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
-namespace api
+namespace Test.API
 {
     public class MongoSetting : Build
     {

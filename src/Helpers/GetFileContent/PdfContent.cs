@@ -5,11 +5,11 @@ namespace Helpers.GetFileContent
 {
     public class PdfContent
     {
-        public string PrintPDF(string filePath)
+        public string PrintPDF(byte[] bytes)
         {
             // var content = new StringBuilder();
             var content = "";
-            using (PdfDocument document = PdfDocument.Open(filePath))
+            using (PdfDocument document = PdfDocument.Open(bytes))
             {
                 for (var i = 0; i < document.NumberOfPages; i++)
                 {

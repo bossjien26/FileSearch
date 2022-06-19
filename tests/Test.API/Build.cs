@@ -1,7 +1,7 @@
 using Helpers;
 using Microsoft.Extensions.Configuration;
 
-namespace api
+namespace Test.API
 {
     public class Build
     {

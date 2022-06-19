@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Enums;
 using Helpers;
@@ -45,13 +46,15 @@ namespace api.Controllers
             _gridFSService = new GridFSService(appSettings);
         }
 
-        [Authorize(RoleEnum.SuperAdmin, RoleEnum.Admin)]
+        // [Authorize(RoleEnum.SuperAdmin, RoleEnum.Admin)]
         [HttpPost]
         [Route("")]
         public async Task<IActionResult> UploadFile([FromForm] UploadFileRequest uploadFile)
         {
-            if (uploadFile.FormFiles.Count == 0) { return NotFound(); }
-            var medias = _fileService.UploadFile(uploadFile.FormFiles);
+            if (uploadFile.File == null) { return NotFound(); }
+            // if (uploadFile.FormFiles == null) { return NotFound(); }
+            // if (uploadFile.FormFiles.Count == 0) { return NotFound(); }
+            var medias = _fileService.UploadFile(uploadFile.File);
             return medias.Count == 0 ?
                 NotFound() :
                 Ok(await _fileToMongoService.InsertMediaListToMongo(medias));
@@ -110,10 +113,10 @@ namespace api.Controllers
             return Ok(fileInfos);
         }
 
-        [Authorize(RoleEnum.SuperAdmin, RoleEnum.Admin)]
-        [HttpGet]
-        [Route("")]
-        public IActionResult test()
+        // [Authorize(RoleEnum.SuperAdmin, RoleEnum.Admin)]
+        [HttpPost]
+        [Route("aa")]
+        public IActionResult test([FromForm] string a)
         {
             return NoContent();
         }
