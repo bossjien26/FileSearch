@@ -57,6 +57,7 @@ namespace Test.API.Controller
             }
         }
 
+        //https://codingcanvas.com/different-ways-of-uploading-files-using-http-based-apis-part-1/
         [Test]
         public async Task ShouldStore()
         {
@@ -97,5 +98,42 @@ namespace Test.API.Controller
             // //Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
+
+        // static void PostMultipartFormData()
+        // {
+        //     using var client = new HttpClient();
+        //     var values = new[]
+        //     {
+        //     new KeyValuePair<string,string>("CustomerId","123123"),
+        //     new KeyValuePair<string,string>("CustomerName","ABC Ltd."),
+        //     };
+        //     using var content = new MultipartFormDataContent();
+        //     foreach (var val in values)
+        //     {
+        //         content.Add(new StringContent(val.Value), val.Key);
+        //     }
+        //     var fileContent = new StreamContent(new FileStream(uploadFilePath, FileMode.Open));
+        //     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(fileContentType);
+        //     fileContent.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data")
+        //     {
+        //         Name = "File",
+        //         FileName = "Text.txt"
+        //     };
+        //     content.Add(fileContent);
+        //     var requestUri = "/api/Upload/FormDataUpload";
+        //     client.BaseAddress = new Uri(apiBaseAddress);
+        //     var result = client.PostAsync(requestUri, content).Result;
+        //     Console.WriteLine($"Response : {result.StatusCode}");
+        // }
+
+
+        // public class FileFormData
+        // {
+        //     public string CustomerId { get; set; }
+
+        //     public string CustomerName { get; set; }
+
+        //     public IFormFile File { get; set; }
+        // }
     }
 }
