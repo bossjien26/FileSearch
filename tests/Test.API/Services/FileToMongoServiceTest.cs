@@ -11,6 +11,19 @@ namespace Test.API.Services
     {
         private FileToMongoService _service;
 
+        private static readonly object[] _sourceMedia =
+        {
+            new object[] {new Media()
+            {
+                OriginName = "test"
+            }},   //case 1
+                new object[] {new Media()
+            {
+                OriginName = "test123"
+            }} //case 2
+        };
+
+
         public FileToMongoServiceTest()
         {
             _service = new FileToMongoService(_appSettings);
@@ -25,14 +38,12 @@ namespace Test.API.Services
             }));
         }
 
-        [Test]
-        public void ShouldInsertMediaListToMongo()
+        // [Test]
+        [TestCaseSource(nameof(_sourceMedia))]
+        public void ShouldInsertMediaListToMongo(Media media)
         {
             Assert.DoesNotThrowAsync(() => new FileToMongoService(_appSettings).InsertMediaListToMongo(new List<Media>(){
-                new Media()
-                {
-                    OriginName = "test"
-                }
+               media
             }));
         }
 
