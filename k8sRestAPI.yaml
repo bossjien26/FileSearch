@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demoapi-deployment
+spec:
+  selector:
+    matchLabels:
+      app: demoapi-pod
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demoapi-pod
+    spec:
+      containers:
+        - name: demoapi-container
+          image: file_search_api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:80
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demoapi-service
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: demoapi-pod
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demoapi-ingress
+# spec:
+#   rules:
+#     - host: helloworld.example.com
+#       http:
+#         paths:
+#           - path: /
+#             backend:
+#               service:
+#                 name: demoapi-service
+#                 port:
+#                   number: 80
+spec:
+  rules:
+    # - host: helloworld.example.com
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: demoapi-service
+                port:
+                  number: 80
