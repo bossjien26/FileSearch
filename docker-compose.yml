@@ -1,0 +1,135 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.4'
+
+#create a volume for the my sql container.To ensure Data persists after my sql container is stopped
+volumes:
+  datafiles:
+  data-volume:
+
+
+services:
+  restApi:
+    container_name: file_search_api
+    image: file_search_api
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./logs:/app/logs
+    build:
+      context: .
+      dockerfile: src/api/Dockerfile
+    # depends_on:
+    #   - es01
+    ## this line is settings development env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - esnet
+
+  mongodbService:
+    container_name: mongodbService
+    image: mongodb_service
+    restart: always
+    build:
+      context: .
+      dockerfile: MongoDb/Dockerfile
+    # command: mongod --auth
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: example
+    #   MONGODB_DATABASE: article
+    ports:
+      - "27017:27017"
+    volumes:
+      - data-volume:/data/db
+    networks:
+      - esnet
+
+networks:
+  esnet:
+    driver: bridge
+  # es01:
+  #   env_file:
+  #     - .env
+  #   # image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+  #   volumes:
+  #     # - elasticKey:/usr/share/elasticsearch/config
+  #     # - ./elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12
+  #     - esdata01:/usr/share/elasticsearch/data
+  #   build:
+  #     context: .
+  #     args:
+  #       - ELASTIC_VERSION=$ELASTIC_VERSION
+  #     # args:
+  #     #   - http_proxy=http://K13688:Khjanwang1234@khproxy.aseglobal.com:3128
+  #     #   - https_proxy=https://K13688:Khjanwang1234@khproxy.aseglobal.com:3128
+  #     dockerfile: Dockerfile
+  #   container_name: es01
+  #   environment:
+  #     - node.name=es01
+  #     - discovery.seed_hosts=es02
+  #     - cluster.initial_master_nodes=es01,es02
+  #     - cluster.name=docker-cluster
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+  #     - xpack.security.enabled=true
+  #     - xpack.security.transport.ssl.enabled=true
+  #     - xpack.security.transport.ssl.keystore.type=PKCS12
+  #     - xpack.security.transport.ssl.verification_mode=certificate
+  #     - xpack.security.transport.ssl.keystore.path=elastic-stack-ca.p12
+  #     - xpack.security.transport.ssl.truststore.path=elastic-stack-ca.p12
+  #     - xpack.security.transport.ssl.truststore.type=PKCS12
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   ports:
+  #     - 9200:9200
+  #   networks:
+  #     - esnet
+  # es02:
+  #   env_file:
+  #     - .env
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       - ELASTIC_VERSION=$ELASTIC_VERSION
+  #   container_name: es02
+  #   environment:
+  #     - node.name=es02
+  #     - discovery.seed_hosts=es01
+  #     - cluster.initial_master_nodes=es01,es02
+  #     - cluster.name=docker-cluster
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+  #     - xpack.security.enabled=true
+  #     - xpack.security.transport.ssl.enabled=true
+  #     - xpack.security.transport.ssl.keystore.type=PKCS12
+  #     - xpack.security.transport.ssl.verification_mode=certificate
+  #     - xpack.security.transport.ssl.keystore.path=elastic-stack-ca.p12
+  #     - xpack.security.transport.ssl.truststore.path=elastic-stack-ca.p12
+  #     - xpack.security.transport.ssl.truststore.type=PKCS12
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   volumes:
+  #     # - ./config:/usr/share/elasticsearch/config
+  #     # - ./elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:rw
+  #     - esdata02:/usr/share/elasticsearch/data
+  #   networks:
+  #     - esnet
+
+  # volumes:
+  #   esdata01:
+  #     driver: local
+  #   # elasticKey:
+  #   #   driver:local
+  #   esdata02:
+  #     driver: local
+  #   data-volume:
+
