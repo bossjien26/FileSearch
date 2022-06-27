@@ -1,0 +1,95 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: elasticsearch-config-yc
+data:
+  elasticsearch.yml: |
+    cluster.name: "docker-cluster" 
+    network.host: 0.0.0.0
+    http.cors.allow-origin: "*"
+    http.cors.enabled: true
+    bootstrap.memory_lock: true
+    xpack.security.transport.ssl.enabled: false
+    xpack.security.enabled: false
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elastic-secret
+type: Opaque
+data:
+  elastic-root-username: ZWxhc3RpYw==
+  elastic-root-password: dGVzdA==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yc-elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yc-elasticsearch
+  template:
+    metadata:
+      labels:
+        app: yc-elasticsearch
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: elasticsearch-config-yc
+            defaultMode: 420
+      initContainers:
+        - name: increase-vm-max-map
+          image: busybox
+          command:
+            - sysctl
+            - "-w"
+            - vm.max_map_count=262144
+          securityContext:
+            privileged: true
+      containers:
+        - name: yc-elasticsearch
+          image: es01:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 9200
+              protocol: TCP
+            - containerPort: 9300
+              protocol: TCP
+          env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+            - name: discovery.type
+              value: single-node
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elastic-secret
+                  key: elastic-root-username
+            - name: ELASTIC_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: elastic-secret
+                  key: elastic-root-password
+
+          volumeMounts:
+            - name: config
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yc-elasticsearch
+spec:
+  ports:
+    - name: yc-elasticsearch
+      protocol: TCP
+      port: 9200
+      targetPort: 9200
+  selector:
+    app: yc-elasticsearch
+  type: ClusterIP
+  sessionAffinity: None
