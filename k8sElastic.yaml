@@ -10,7 +10,7 @@ data:
     http.cors.enabled: true
     bootstrap.memory_lock: true
     xpack.security.transport.ssl.enabled: false
-    xpack.security.enabled: false
+    xpack.security.enabled: true
 ---
 apiVersion: v1
 kind: Secret
@@ -40,15 +40,6 @@ spec:
           configMap:
             name: elasticsearch-config-yc
             defaultMode: 420
-      initContainers:
-        - name: increase-vm-max-map
-          image: busybox
-          command:
-            - sysctl
-            - "-w"
-            - vm.max_map_count=262144
-          securityContext:
-            privileged: true
       containers:
         - name: yc-elasticsearch
           image: es01:latest
@@ -67,12 +58,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: elastic-secret
-                  key: elastic-root-username
+                  key: elastic-root-password
             - name: ELASTIC_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: elastic-secret
-                  key: elastic-root-password
+                  key: elastic-root-username
 
           volumeMounts:
             - name: config
