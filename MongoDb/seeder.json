@@ -1,0 +1,11 @@
+[
+    {
+        "GroupId": "test",
+        "Project": "test",
+        "Password": "1656602305",
+        "Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJncm91cElkIjoidGVzdCIsInByb2plY3QiOiJ0ZXN0IiwicGFzc3dvcmQiOiIxNjU2NjAyMzA1Iiwicm9sZSI6IkN1c3RvbWVyIiwibmJmIjoxNjU2NjAyMzA1LCJleHAiOjQ4MTIyNzU5MDUsImlhdCI6MTY1NjYwMjMwNSwiaXNzIjoidmNzam9uZXMifQ.TD5-Jdzk4VcMKYmt2yoMHNIm1bodt_LfJkWNHCYqlLY",
+        "Role": 4,
+        "createAt": "1656602305",
+        "ExpireAt": "1972221505138"
+    }
+]

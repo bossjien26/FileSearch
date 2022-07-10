@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mongodb-service
+  namespace: file-service
   labels:
     name: mongo
 spec:
@@ -10,12 +11,13 @@ spec:
       targetPort: 27017
   clusterIP: None
   selector:
-    role: mongo
+    app: mongo
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: mongodb-secret
+  namespace: file-service
 type: Opaque
 data:
   mongo-root-username: cm9vdA==
@@ -23,32 +25,46 @@ data:
   mongo-database: bWVkaWE=
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: mongod
+  namespace: file-service
 spec:
-  serviceName: mongodb-service
+  # serviceName: mongodb-service
   replicas: 1
   selector:
     matchLabels:
-      role: mongo
+      app: mongo
   template:
     metadata:
       labels:
-        role: mongo
+        app: mongo
         # environment: test
         # replicaset: MainRepSet
     spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: mongod-container
-          image: mongo
-          # command:
-          #   - "mongod"
-          #   - "--bind_ip"
-          #   - "0.0.0.0"
-          #   - "--replSet"
-          #   - "MainRepSet"
+          image: mongo_service:latest
+          imagePullPolicy: Never
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - mongo
+          #       - --disableImplicitSessions
+          #       - --eval
+          #       - "db.adminCommand('ping')"
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
+          #   successThreshold: 1
+          #   failureThreshold: 6
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
@@ -65,6 +81,12 @@ spec:
                 secretKeyRef:
                   name: mongodb-secret
                   key: mongo-database
+          # command:
+          #   [
+          #     "mongoimport -u root -p example -d media -c token --type json --file /seeder.json --jsonArray  --authenticationDatabase admin",
+          #   ]
+          #  mongodb://root:example@127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+          # mongoimport -u root -p example -d media -c token --type json --file /seeder.json --jsonArray  --authenticationDatabase admin
           ports:
             - containerPort: 27017
   #         volumeMounts:
