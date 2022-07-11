@@ -45,3 +45,9 @@ minikube dashboard --url
 ```sh
 kubectl run test --image=file_search_api --restart=Never --image-pull-policy=Never
 ```
+
+
+```js
+getIPs().then(res => document.write(res.join('\n')))
+<script src="https://cdn.jsdelivr.net/gh/joeymalvinni/webrtc-ip/dist/bundle.dev.js"></script>
+```
