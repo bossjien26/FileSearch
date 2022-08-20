@@ -43,6 +43,9 @@ spec:
           configMap:
             name: elasticsearch-config-yc
             defaultMode: 420
+        - name: elasticsearch-data
+          persistentVolumeClaim:
+            claimName: file-search-pvc
       containers:
         - name: yc-elasticsearch
           image: es01:latest
@@ -77,6 +80,8 @@ spec:
             - name: config
               mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
               subPath: elasticsearch.yml
+            - name: elasticsearch-data #要與volumes 裡面name一樣
+              mountPath: /usr/share/elasticsearch/data
 ---
 apiVersion: v1
 kind: Service
