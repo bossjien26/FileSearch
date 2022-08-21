@@ -25,7 +25,7 @@ RUN dotnet publish "api.csproj" -c Release -o /app/publish
 FROM base As final
 WORKDIR /app
 COPY --from=publish /app/publish .
-RUN apk add --no-cache tzdata
+# RUN apk add --no-cache tzdata
 ENV TZ Asia/Taipei
 # ENV ASPNETCORE_URLS=http://+:5000
 ENTRYPOINT ["dotnet", "api.dll"]
