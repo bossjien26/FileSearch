@@ -54,7 +54,10 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c", "chmod 777 /usr/share/elasticsearch/data","curl -X PUT 'http://localhost:9200/fileIndex?pretty'","curl -X POST  'http://localhost:9200/fileIndex/_mapping' -H 'Content-Type:application/json' -d {
+                command: ["/bin/sh", "-c", "chmod 777 /usr/share/elasticsearch/data"]
+          readinessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "curl -X PUT 'http://elastic:test@localhost:9200/filesindex'","curl -X POST  'http://elastic:test@localhost:9200/fileIndex/_mapping' -H 'Content-Type:application/json' -d {
                   'properties': {
                     'content': {
                       'type': 'text',
@@ -62,6 +65,8 @@ spec:
                       'search_analyzer': 'ik_max_word'
                     }
                   }}"]
+            initialDelaySeconds: 60
+            timeoutSeconds: 10
           ports:
             - containerPort: 9200
               protocol: TCP
@@ -84,7 +89,7 @@ spec:
                   key: elastic-root-username
           resources:
             limits:
-              cpu: 250m
+              cpu: 1
               memory: 1024Mi
             requests:
               cpu: 500m
