@@ -43,16 +43,21 @@ spec:
         # replicaset: MainRepSet
     spec:
       terminationGracePeriodSeconds: 10
+      volumes:
+        - name: mongodb-persistent-storage-claim
+          persistentVolumeClaim:
+            claimName: file-search-pvc
       containers:
         - name: mongod-container
           image: mongo_service:latest
           imagePullPolicy: Never
           resources:
             limits:
-              memory: 200Mi
+              cpu: 250m
+              memory: 1024Mi
             requests:
-              cpu: 100m
-              memory: 200Mi
+              cpu: 500m
+              memory: 1024Mi
           # livenessProbe:
           #   exec:
           #     command:
@@ -89,9 +94,9 @@ spec:
           # mongoimport -u root -p example -d media -c token --type json --file /seeder.json --jsonArray  --authenticationDatabase admin
           ports:
             - containerPort: 27017
-  #         volumeMounts:
-  #           - name: mongodb-persistent-storage-claim
-  #             mountPath: /data/db
+          volumeMounts:
+            - name: mongodb-persistent-storage-claim
+              mountPath: /data/db
   # volumeClaimTemplates:
   #   - metadata:
   #       name: mongodb-persistent-storage-claim

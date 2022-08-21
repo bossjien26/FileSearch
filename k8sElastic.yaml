@@ -50,6 +50,18 @@ spec:
         - name: yc-elasticsearch
           image: es01:latest
           imagePullPolicy: Never
+          # command: ["chmod 777 /usr/share/elasticsearch/data"]
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "chmod 777 /usr/share/elasticsearch/data","curl -X PUT 'http://localhost:9200/fileIndex?pretty'","curl -X POST  'http://localhost:9200/fileIndex/_mapping' -H 'Content-Type:application/json' -d {
+                  'properties': {
+                    'content': {
+                      'type': 'text',
+                      'analyzer': 'ik_max_word',
+                      'search_analyzer': 'ik_max_word'
+                    }
+                  }}"]
           ports:
             - containerPort: 9200
               protocol: TCP
@@ -72,14 +84,17 @@ spec:
                   key: elastic-root-username
           resources:
             limits:
-              memory: 200Mi
+              cpu: 250m
+              memory: 1024Mi
             requests:
-              cpu: 100m
-              memory: 200Mi
+              cpu: 500m
+              memory: 1024Mi
           volumeMounts:
             - name: config
               mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
               subPath: elasticsearch.yml
+            # - mountPath: /usr/share/elasticsearch/data
+            #   name: elasticsearch-data
             - name: elasticsearch-data #要與volumes 裡面name一樣
               mountPath: /usr/share/elasticsearch/data
 ---

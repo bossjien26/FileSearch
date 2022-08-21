@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: demoapi-deployment
+  namespace: file-service
 spec:
   selector:
     matchLabels:
@@ -12,6 +13,10 @@ spec:
       labels:
         app: demoapi-pod
     spec:
+      volumes:
+        - name: file-search-api-claim
+          persistentVolumeClaim:
+            claimName: file-search-pvc
       containers:
         - name: demoapi-container
           image: file_search_api:latest
@@ -24,11 +29,21 @@ spec:
               value: http://+:80
             - name: ASPNETCORE_ENVIRONMENT
               value: Development
+          volumeMounts:
+            - name: file-search-api-claim
+              mountPath: /app/logs
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: demoapi-service
+  namespace: file-service
 spec:
   selector:
     app: demoapi-pod
@@ -42,11 +57,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
+  namespace: file-service
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+  # annotations:
+  #   nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
-    - host: demo.k8s.io
+    - host: demo.k8s.com
       http:
         paths:
           - path: /
