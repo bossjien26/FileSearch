@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: file-service-api-pv
+  namespace: file-service
+spec:
+  storageClassName: stardard
+  capacity:
+    storage: 0.5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/Datas/ApiData"
+    type: "DirectoryOrCreate"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: file-search-api-pvc
+  namespace: file-service
+spec:
+  storageClassName: stardard
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 0.25Gi

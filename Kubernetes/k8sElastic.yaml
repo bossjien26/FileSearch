@@ -45,7 +45,7 @@ spec:
             defaultMode: 420
         - name: elasticsearch-data
           persistentVolumeClaim:
-            claimName: file-search-pvc
+            claimName: file-search-elastic-pvc
       containers:
         - name: yc-elasticsearch
           image: es01:latest
@@ -101,7 +101,7 @@ spec:
                   key: elastic-root-username
           resources:
             limits:
-              cpu: 250m
+              cpu: 1
               memory: 1024Mi
             requests:
               cpu: 500m
@@ -110,6 +110,8 @@ spec:
             - name: config
               mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
               subPath: elasticsearch.yml
+            # - mountPath: /usr/share/elasticsearch/data
+            #   name: elasticsearch-data
             - name: elasticsearch-data #要與volumes 裡面name一樣
               mountPath: /usr/share/elasticsearch/data
 ---

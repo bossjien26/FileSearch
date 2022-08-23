@@ -46,14 +46,14 @@ spec:
       volumes:
         - name: mongodb-persistent-storage-claim
           persistentVolumeClaim:
-            claimName: file-search-pvc
+            claimName: file-search-mongo-pvc
       containers:
         - name: mongod-container
           image: mongo_service:latest
           imagePullPolicy: Never
           resources:
             limits:
-              cpu: 250m
+              cpu: 1
               memory: 1024Mi
             requests:
               cpu: 500m
@@ -70,6 +70,17 @@ spec:
           #   timeoutSeconds: 5
           #   successThreshold: 1
           #   failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                [
+                  "/bin/sh",
+                  "-c",
+                  "mongoimport --authenticationDatabase admin --username root --password example -d media --collection token --file /seeder.json  --jsonArray",
+                ]
+                # - /bin/my-script.sh
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:

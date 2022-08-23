@@ -16,7 +16,7 @@ spec:
       volumes:
         - name: file-search-api-claim
           persistentVolumeClaim:
-            claimName: file-search-pvc
+            claimName: file-search-api-pvc
       containers:
         - name: demoapi-container
           image: file_search_api:latest

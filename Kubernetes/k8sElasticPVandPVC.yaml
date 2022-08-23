@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: file-service-elastic-pv
+  namespace: file-service
+spec:
+  storageClassName: stardard
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/Datas/ElasticData"
+    type: "DirectoryOrCreate"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: file-search-elastic-pvc
+  namespace: file-service
+spec:
+  storageClassName: stardard
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 3Gi
